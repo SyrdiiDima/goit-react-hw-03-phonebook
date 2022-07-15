@@ -1,7 +1,7 @@
-import { Component } from "react";
-import Form from "./Form/Form";
-import FilterContact from "./FilterContact/FilterContact";
-import ContactList from "./ContactList/ContactList";
+import { Component } from 'react';
+import Form from './Form/Form';
+import FilterContact from './FilterContact/FilterContact';
+import ContactList from './ContactList/ContactList';
 
 export class App extends Component {
   state = {
@@ -16,14 +16,13 @@ export class App extends Component {
 
   handleAddContact = contactItem => {
     this.setState(prevState => ({
-      contacts: [contactItem,...prevState.contacts ],
+      contacts: [contactItem, ...prevState.contacts],
     }));
   };
 
-
   handleDeleteContact = contactId => {
     this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact=> contact.id !== contactId),
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
     }));
   };
 
@@ -38,6 +37,21 @@ export class App extends Component {
       name.toLowerCase().includes(normalizedFilter)
     );
   };
+
+  componentDidMount() {
+    const contact = localStorage.getItem('contacts');
+    // console.log(contact);
+    const parsedContacts = JSON.parse(contact);
+
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
   render() {
     const { contacts, filter } = this.state;
     const visibleContacts = this.getVisibleContacts();
@@ -46,12 +60,9 @@ export class App extends Component {
     return (
       <div>
         <h1 >Phonebook</h1>
-        <Form
-          onSubmit={this.handleAddContact}
-          contactsName={contactsName}
-        />
+        <Form onSubmit={this.handleAddContact} contactsName={contactsName} />
 
-        <h2 >Contacts</h2>
+        <h2>Contacts</h2>
         <div>
           <FilterContact value={filter} onChange={this.changeFilter} />
           <ContactList
@@ -63,4 +74,3 @@ export class App extends Component {
     );
   }
 }
-
